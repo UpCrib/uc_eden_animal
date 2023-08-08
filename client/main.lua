@@ -1,5 +1,5 @@
 -- internal variables
-ESX = nil
+ESX = exports["es_extended"]:getSharedObject()
 local ped, model, object, animation = {}, {}, {}, {}
 local status = 100
 local objCoords
@@ -7,11 +7,6 @@ local come = 0
 local isAttached, getball, inanimation, balle = false ,false, false, false
 
 Citizen.CreateThread(function()
-	while ESX == nil do
-		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
-		Citizen.Wait(0)
-	end
-
 	Citizen.Wait(5000)
 	DoRequestModel(-1788665315) -- chien
 	DoRequestModel(1462895032) -- chat
@@ -397,6 +392,14 @@ function openchien()
 	end)
 end
 
+function OpenPetMenuIfSafe()
+	if not ESX.UI.Menu.IsOpen('default', GetCurrentResourceName(), 'pet_menu') then
+		OpenPetMenu()
+	end
+end
+
+AddEventHandler('uc_eden_animal:openPetMenu', OpenPetMenuIfSafe)
+
 Citizen.CreateThread(function()
 	while true do
 		Citizen.Wait(math.random(60000, 120000))
@@ -420,8 +423,8 @@ Citizen.CreateThread(function()
 	while true do
 		Citizen.Wait(0)
 
-		if IsControlJustPressed(0, 56) and GetLastInputMethod(2) and not ESX.UI.Menu.IsOpen('default', GetCurrentResourceName(), 'pet_menu') then
-			OpenPetMenu()
+		if IsControlJustPressed(0, 56) and GetLastInputMethod(2) then
+			OpenPetMenuIfSafe()
 		end
 	end
 end)
